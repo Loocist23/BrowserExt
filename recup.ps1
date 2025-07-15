@@ -1,10 +1,28 @@
-param(
-    [string]$username,
-    [string]$basedir
-)
-
-# Changer l'encodage de la console pour afficher les accents correctement
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+
+
+$banner = @"
+//  __________                                        ___________         __   
+//  \______   \_______  ______  _  ________ __________\_   _____/__  ____/  |_ 
+//   |    |  _/\_  __ \/  _ \ \/ \/ /  ___// __ \_  __ \    __)_\  \/  /\   __\
+//   |    |   \ |  | \(  <_> )     /\___ \\  ___/|  | \/        \>    <  |  |  
+//   |______  / |__|   \____/ \/\_//____  >\___  >__| /_______  /__/\_ \ |__|  
+//          \/                          \/     \/             \/      \/       
+                                                            
+        BrowserExt v0.2.6 - by Loocist23
+"@
+Write-Host $banner -ForegroundColor Cyan
+
+# Demande du nom de la personne (ne doit pas être vide)
+do {
+    $username = Read-Host "Nom de la personne (ex: Mme Dupont)"
+    if ([string]::IsNullOrWhiteSpace($username)) {
+        Write-Host "Le nom ne peut pas être vide. Veuillez réessayer." -ForegroundColor Yellow
+    }
+} while ([string]::IsNullOrWhiteSpace($username))
+
+$basedir = Join-Path "$PSScriptRoot\DUMP" $username
+New-Item -ItemType Directory -Path $basedir -Force | Out-Null
 
 # Créer le fichier log
 $logFile = Join-Path $basedir "log.txt"
@@ -97,7 +115,8 @@ foreach ($browser in $browserPages) {
             Start-Sleep -Milliseconds 300
             $wShell.SendKeys("{ENTER}")
             Log "Page d'export des mots de passe ouverte pour $($browser.Name)."
-        } else {
+        }
+        else {
             Log "$($browser.Name) non installé ou exécutable introuvable."
         }
     }
